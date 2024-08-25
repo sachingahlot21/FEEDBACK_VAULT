@@ -1,16 +1,36 @@
 import './App.css'
 import Login from './components/Login/Login'
-import { BrowserRouter as Router, Route, Routes,Navigate } from 'react-router-dom';
+import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom';
 import Signup from './components/Signup/Signup'
 import Home from './components/Home/Home'
 import Dashboard from './components/Dashboard/Dashboard'
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import { useAuth , AuthProvider } from './context/AuthContext';
+
 function App() {
 
-const[isAuthenticated , setIsAutenticated] = useState(false)
+  const { isAuthenticated } = useAuth();
+
+  // const [isAuthenticated, setIsAuthenticated] = useState(false)
+  // const checkAuthentication = () => {
+  //   const token = localStorage.getItem('token');
+  //   if (token) {
+  //     setIsAuthenticated(true);
+  //   } else {
+  //     setIsAuthenticated(false);
+  //   }
+  // };
+
+  // useEffect(() => {
+  //   checkAuthentication();
+  // }, []);
+
+  // const handleLogin = () => {
+  //   checkAuthentication(); 
+  // };
+
   return (
     <>
-      <Router>
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/login" element={<Login />} />
@@ -18,7 +38,6 @@ const[isAuthenticated , setIsAutenticated] = useState(false)
           <Route path="/dashboard" element={isAuthenticated ? <Dashboard /> : <Navigate to="/login" />}
           />
         </Routes>
-      </Router>
     </>
   )
 }

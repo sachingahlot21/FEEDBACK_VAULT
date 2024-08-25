@@ -1,10 +1,11 @@
 const express = require('express')
 const { jwtAuthMiddleware } = require('../jwt')
-const{handleUserSignup, verifyEmail,acceptMessage,sendMessage, getAllMessage,suggestQuestions}= require('../controllers/index')
+const{handleUserSignup,handleUserLogin, verifyEmail,acceptMessage,sendMessage, getAllMessage,suggestQuestions}= require('../controllers/index')
 
 const router = express.Router();
 
 router.post('/signup' , handleUserSignup)
+router.post('/signin' , handleUserLogin)
 router.get('/verify-email' , verifyEmail)
 router.post('/accept-message' ,jwtAuthMiddleware, acceptMessage)
 router.post('/send-message' , sendMessage)

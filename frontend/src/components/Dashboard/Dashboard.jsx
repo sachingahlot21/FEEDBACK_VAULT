@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
+import { useAuth } from '../../context/AuthContext';
 
 const Dashboard = () => {
   const [acceptMessages, setAcceptMessages] = useState(false);
+  const {logout} = useAuth()
 
   // Function to handle copy button click
   const handleCopy = () => {
@@ -14,6 +16,10 @@ const Dashboard = () => {
   const handleToggle = () => {
     setAcceptMessages(prevState => !prevState);
   };
+
+  const handleLogout = () =>{
+logout()
+  }
 
   return (
     <div className="w-full min-h-screen">
@@ -34,7 +40,7 @@ const Dashboard = () => {
        <div className="container mx-auto flex flex-col md:flex-row justify-between items-center">
           <a href="#" className='text-3xl font-bold'>Feedback Vault</a>
           <span className="mr-4 text-2xl">Welcome, sachingahlot2213</span>
-          <button className='bg-white text-black rounded px-8 py-2 text-xl'>Logout</button>
+          <button onClick={handleLogout} className='bg-white text-black rounded px-8 py-2 text-xl'>Logout</button>
         </div>
       </nav>
       <div className="bg-white my-8 mx-4 md:mx-8 lg:mx-auto p-6 rounded w-full max-w-6xl">

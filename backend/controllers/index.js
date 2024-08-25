@@ -114,15 +114,20 @@ async function handleUserLogin(req, res) {
             return res.status(400).json({ message: "Invalid email or password" });
         }
 
-        const token = await jwt.sign(
-            { userId: user._id },
-            process.env.JWT_SECRET, // Replace with your actual JWT secret
-            { expiresIn: '1h' } // Token expires in 1 hour
-        );
+        // const token = await jwt.sign(
+        //     { userId: user._id },
+        //     process.env.JWT_SECRET, // Replace with your actual JWT secret
+        //     { expiresIn: '1h' } // Token expires in 1 hour
+        // );
 
-        res.status(200).json({
+        const payload = {
+           email:email
+        }
+        const token = generateToken(payload)
+        res.status(201).json({
             message: "Login successful",
             token
+        
         });
 
     } catch (error) {
