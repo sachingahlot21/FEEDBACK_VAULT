@@ -24,7 +24,7 @@ async function handleUserSignup(req, res) {
 
         const existingUserByMail = await User.findOne({ email })
         let verifyCode = Math.floor(100000 + Math.random() * 900000).toString();
-        let savedUser;
+        let savedUser
 
         if (existingUserByMail) {
 
