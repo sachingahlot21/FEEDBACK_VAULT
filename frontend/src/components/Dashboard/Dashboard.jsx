@@ -39,7 +39,7 @@ logout()
       <nav className='px-8 w-full text-white flex justify-between items-center bg-black  h-28 '>
        <div className="container mx-auto flex flex-col md:flex-row justify-between items-center">
           <a href="#" className='text-3xl font-bold'>Feedback Vault</a>
-          <span className="mr-4 text-2xl">Welcome,back to your profile sachingahlot2213</span>
+          <span className="mr-4 text-2xl">Welcome, sachingahlot2213</span>
           <button onClick={handleLogout} className='bg-white text-black rounded px-8 py-2 text-xl'>Logout</button>
         </div>
       </nav>
