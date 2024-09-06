@@ -121,13 +121,14 @@ async function handleUserLogin(req, res) {
         // );
 
         const payload = {
-           email:email
+            email: email
         }
         const token = generateToken(payload)
         res.status(201).json({
             message: "Login successful",
+            user,
             token
-        
+
         });
 
     } catch (error) {
@@ -190,6 +191,34 @@ async function acceptMessage(req, res) {
 
 }
 
+async function getAcceptMessage(req, res) {
+    const { userId } = req.body;
+    
+    // Validate userId (you might need a more thorough check depending on your userId format)
+    if (!userId) {
+        return res.status(400).json({ message: "userId is required" });
+    }
+
+    try {
+        const user = await User.findById(userId);
+        if (!user) {
+            return res.status(404).json({ 
+                message: `User with ID ${userId} not found`, 
+                userId 
+            });
+        }
+        
+        return res.status(200).json({
+            message: "Message status retrieved successfully",
+            messageAcceptStatus: user.isAcceptingMessage
+        });
+    } catch (error) {
+        console.error('Error getting message acceptance status:', error);
+        return res.status(500).json({ message: "Error while getting message acceptance status" });
+    }
+}
+
+
 async function sendMessage(req, res) {
     const { username, content } = await req.body
 
@@ -219,31 +248,31 @@ async function sendMessage(req, res) {
 async function getAllMessage(req, res) {
     const { userid } = req.body;
     const userId = new mongoose.Types.ObjectId(userid);
-  
+
     try {
-      const user = await User.aggregate([
-        { $match: { _id: userId } },
-        { $unwind: '$messages' },
-        { $sort: { 'messages.createdAt': -1 } },
-        { $group: { _id: '$_id', messages: { $push: '$messages' } } },
-      ]).exec();
-  
-      if (!user || user.length === 0) {
-        return res.status(404).json({ message: 'User not found', success: false });
-      }
-  
-      return res.status(200).json({ messages: user[0].messages });
+        const user = await User.aggregate([
+            { $match: { _id: userId } },
+            { $unwind: '$messages' },
+            { $sort: { 'messages.createdAt': -1 } },
+            { $group: { _id: '$_id', messages: { $push: '$messages' } } },
+        ]).exec();
+
+        if (!user || user.length === 0) {
+            return res.status(404).json({ message: 'User not found', success: false });
+        }
+
+        return res.status(200).json({ messages: user[0].messages });
     } catch (error) {
-      console.error('An unexpected error occurred:', error);
-      return res.status(500).json({ message: 'Internal server error', success: false });
+        console.error('An unexpected error occurred:', error);
+        return res.status(500).json({ message: 'Internal server error', success: false });
     }
 }
 
 async function suggestQuestions(req, res) {
 
     const OPENAI_API_KEY = process.env.OPENAI_API_KEY;
-    
-    console.log("called" , OPENAI_API_KEY)
+
+    console.log("called", OPENAI_API_KEY)
 
     const prompt = "Create a list of three open-ended and engaging questions formatted as a single string. Each question should be separated by '||'. These questions are for an anonymous social messaging platform, like Qooh.me, and should be suitable for a diverse audience. Avoid personal or sensitive topics, focusing instead on universal themes that encourage friendly interaction. For example, your output should be structured like this: 'What’s a hobby you’ve recently started?||If you could have dinner with any historical figure, who would it be?||What’s a simple thing that makes you happy?'. Ensure the questions are intriguing, foster curiosity, and contribute to a positive and welcoming conversational environment.";
 
@@ -269,4 +298,4 @@ async function suggestQuestions(req, res) {
     }
 }
 
-module.exports = { handleUserSignup, verifyEmail, handleUserLogin, acceptMessage, sendMessage, getAllMessage, suggestQuestions }
+module.exports = { handleUserSignup, getAcceptMessage, verifyEmail, handleUserLogin, acceptMessage, sendMessage, getAllMessage, suggestQuestions }

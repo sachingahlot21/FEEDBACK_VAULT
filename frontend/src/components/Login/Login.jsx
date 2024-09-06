@@ -4,17 +4,18 @@ import { useState } from 'react'
 import axios from 'axios';
 import { BrowserRouter as Router, useNavigate, Route, Routes, Navigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
+import { useUser } from '../../context/UserContext'
 
 export default function Login({ onLogin }) {
   const [userId, setUserId] = useState('')
   const [userPassword, setUserPassword] = useState('')
-  const { login } = useAuth();
 
+  const { setUserIDContext, setUserNameContext } = useUser()
+  const { login } = useAuth();
   const navigate = useNavigate()
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
     const data = {
       email: userId,
       password: userPassword
@@ -22,7 +23,12 @@ export default function Login({ onLogin }) {
     try {
       const response = await axios.post('http://localhost:3000/signin', data)
       if (response.status > 200) {
-       login('123') 
+
+        console.log("res", response.data.user._id)
+        console.log("res", response.data.user.username)
+        setUserNameContext(response.data.user.username)
+        setUserIDContext(response.data.user._id)
+        login('123')
         navigate('/dashboard')
         setUserId('')
         setUserPassword('')
@@ -38,6 +44,7 @@ export default function Login({ onLogin }) {
       console.log("signup error", error)
     }
   }
+
   return (
     <div className=' w-full  flex justify-center  items-center h-screen bg-black'>
       <div className='w-full   h-[100%] bg-white '>

@@ -3,9 +3,10 @@ import { Link } from 'react-router-dom'
 
 function Public() {
   return (
-    <div>Public
+    <div>
+      Public
 
-        <Link to={'/'} ></Link>
+        <Link to={'/dashboard'} >Signup</Link>
     </div>
   )
 }

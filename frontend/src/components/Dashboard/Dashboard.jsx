@@ -1,9 +1,12 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useAuth } from '../../context/AuthContext';
+import { useUser } from '../../context/UserContext';
+import axios from 'axios';
 
 const Dashboard = () => {
   const [acceptMessages, setAcceptMessages] = useState(false);
-  const {logout} = useAuth()
+  const { logout } = useAuth()
+  const { userNameContext, userIDContext } = useUser()
 
   // Function to handle copy button click
   const handleCopy = () => {
@@ -13,16 +16,64 @@ const Dashboard = () => {
   };
 
   // Function to handle toggle switch change
-  const handleToggle = () => {
-    setAcceptMessages(prevState => !prevState);
-  };
+  // const handleToggle = () => {
+  //   setAcceptMessages(prevState => !prevState);
+  // };
 
-  const handleLogout = () =>{
-logout()
+  const handleToggle = async () => {
+
+    const data = {
+      "messageStatus": !acceptMessages,
+      "userId": userIDContext
+    }
+
+    try {
+      const response = await axios.post('http://localhost:3000/accept-message', data)
+      if (response.status > 200) {
+        console.log('request fulfilled...')
+        setAcceptMessages(prevState => !prevState);
+      }
+      else {
+        console.log("failed to fulfill...")  
+      }
+    }
+    catch (error) {
+      console.log("message request failed by error", error)
+    }
+  }
+
+  const getAcceptMessage = async () => {
+    console.log("u_id", userIDContext)
+    const data = {
+      userId: userIDContext
+    }
+
+    try {
+      const response = await axios.post('http://localhost:3000/get-accept-message', data)
+      if (response.status >= 200) {
+        setAcceptMessages(response.data.messageAcceptStatus)
+      }
+      else {
+        console.log("failed to fulfill...")
+      }
+    }
+    catch (error) {
+      console.log("message request failed by error", error)
+    }
+  }
+
+  useEffect(() => {
+    // handleAcceptMessages()
+    getAcceptMessage()
+  }, [])
+
+  const handleLogout = () => {
+    logout()
   }
 
   return (
     <div className="w-full min-h-screen">
+
       {/* <nav className="p-6 md:p-8 shadow-md bg-gray-900 text-white">
         <div className="container mx-auto flex flex-col md:flex-row justify-between items-center">
           <a href="#" className="text-xl font-bold mb-4 md:mb-0">Feedback Vault</a>
@@ -37,9 +88,9 @@ logout()
       </nav> */}
 
       <nav className='px-8 w-full text-white flex justify-between items-center bg-black  h-28 '>
-       <div className="container mx-auto flex flex-col md:flex-row justify-between items-center">
+        <div className="container mx-auto flex flex-col md:flex-row justify-between items-center">
           <a href="#" className='text-3xl font-bold'>Feedback Vault</a>
-          <span className="mr-4 text-2xl">Welcome, sachingahlot2213</span>
+          <span className="mr-4 text-2xl">Welcome, {userNameContext}</span>
           <button onClick={handleLogout} className='bg-white text-black rounded px-8 py-2 text-xl'>Logout</button>
         </div>
       </nav>
@@ -52,7 +103,7 @@ logout()
               disabled
               className="input text-xl input-bordered w-full p-4 mr-2"
               type="text"
-              value="https://truefeedback.in/u/sachingahlot2213"
+              value={`http://localhost:5173/public/${userNameContext}`}
             />
             <button
               className="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-black text-white hover:bg-primary/90 h-10 px-4 py-2"
