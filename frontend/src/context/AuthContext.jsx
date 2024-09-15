@@ -11,8 +11,9 @@ export const AuthProvider = ({ children }) => {
     const[authToken , setAuthToken] = useState('')
     
     const navigate = useNavigate()
+
     useEffect(() => {
-      const token = localStorage.getItem('token');
+      const token = sessionStorage.getItem('token');
       if (token) {
         setIsAuthenticated(true);
       } else {
@@ -21,20 +22,19 @@ export const AuthProvider = ({ children }) => {
     }, []);
   
     const login = (token) => {
-      localStorage.setItem('token', token);
+      sessionStorage.setItem('token', token);
       setAuthToken(token)
       setIsAuthenticated(true);
     };
   
     const logout = () => {
-      localStorage.removeItem('token');
+      sessionStorage.removeItem('token');
       navigate('/')
-      setIsAuthenticated(false);
-     
+      setIsAuthenticated(false); 
     };
   
     return (
-      <AuthContext.Provider value={{ isAuthenticated, login, logout,authToken }}>
+      <AuthContext.Provider value={{ isAuthenticated,setIsAuthenticated, login, logout,authToken }}>
         {children}
       </AuthContext.Provider>
     );

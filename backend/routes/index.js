@@ -10,7 +10,7 @@ router.get('/verify-email' , verifyEmail)
 router.post('/accept-message' ,acceptMessage)
 router.post('/send-message' , sendMessage)
 router.get('/questions' , suggestQuestions)
-router.get('/messages' , getAllMessage)
+router.post('/messages' , getAllMessage)
 router.post('/get-accept-message' , getAcceptMessage)
 
 module.exports = router

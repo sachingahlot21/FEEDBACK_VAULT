@@ -193,7 +193,7 @@ async function acceptMessage(req, res) {
 
 async function getAcceptMessage(req, res) {
     const { userId } = req.body;
-    
+
     // Validate userId (you might need a more thorough check depending on your userId format)
     if (!userId) {
         return res.status(400).json({ message: "userId is required" });
@@ -202,12 +202,12 @@ async function getAcceptMessage(req, res) {
     try {
         const user = await User.findById(userId);
         if (!user) {
-            return res.status(404).json({ 
-                message: `User with ID ${userId} not found`, 
-                userId 
+            return res.status(404).json({
+                message: `User with ID ${userId} not found`,
+                userId
             });
         }
-        
+
         return res.status(200).json({
             message: "Message status retrieved successfully",
             messageAcceptStatus: user.isAcceptingMessage
@@ -248,6 +248,7 @@ async function sendMessage(req, res) {
 async function getAllMessage(req, res) {
     const { userid } = req.body;
     const userId = new mongoose.Types.ObjectId(userid);
+    console.log("galm", userid)
 
     try {
         const user = await User.aggregate([

@@ -7,7 +7,7 @@ export default function AppWrapper() {
   return (
     <AuthProvider>
       <UserProvider>
-      <App />
+        <App />
       </UserProvider>
     </AuthProvider>
   );

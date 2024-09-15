@@ -24,8 +24,8 @@ export default function Login({ onLogin }) {
       const response = await axios.post('http://localhost:3000/signin', data)
       if (response.status > 200) {
 
-        console.log("res", response.data.user._id)
-        console.log("res", response.data.user.username)
+        // console.log("res", response.data.user._id)
+        // console.log("res", response.data.user.username)
         setUserNameContext(response.data.user.username)
         setUserIDContext(response.data.user._id)
         login('123')
@@ -44,6 +44,7 @@ export default function Login({ onLogin }) {
       console.log("signup error", error)
     }
   }
+  
 
   return (
     <div className=' w-full  flex justify-center  items-center h-screen bg-black'>

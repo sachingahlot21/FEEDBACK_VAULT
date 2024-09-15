@@ -4,24 +4,21 @@ import { useUser } from '../../context/UserContext';
 import axios from 'axios';
 
 const Dashboard = () => {
+
   const [acceptMessages, setAcceptMessages] = useState(false);
+  const [allMessages, setAllMessages] = useState([])
   const { logout } = useAuth()
   const { userNameContext, userIDContext } = useUser()
 
-  // Function to handle copy button click
+
   const handleCopy = () => {
     navigator.clipboard.writeText('https://truefeedback.in/u/sachingahlot2213')
       .then(() => alert('Link copied to clipboard!'))
       .catch(err => console.error('Failed to copy: ', err));
   };
 
-  // Function to handle toggle switch change
-  // const handleToggle = () => {
-  //   setAcceptMessages(prevState => !prevState);
-  // };
 
   const handleToggle = async () => {
-
     const data = {
       "messageStatus": !acceptMessages,
       "userId": userIDContext
@@ -34,7 +31,7 @@ const Dashboard = () => {
         setAcceptMessages(prevState => !prevState);
       }
       else {
-        console.log("failed to fulfill...")  
+        console.log("failed to fulfill...")
       }
     }
     catch (error) {
@@ -42,8 +39,33 @@ const Dashboard = () => {
     }
   }
 
+
+
+  const handleGetMessages = async () => {
+
+    const data = {
+      userid: userIDContext
+    }
+    try {
+    
+      const response = await axios.post("http://localhost:3000/messages", data)
+
+      if (response.status >= 200 && response.status < 300) {
+
+        setAllMessages(response.data.messages)
+      } else {
+        console.log(`Unexpected status code: ${response.status}`);
+      }
+    }
+    catch (error) {
+      console.log("error fetching messages...", error)
+    }
+
+  }
+
+
+
   const getAcceptMessage = async () => {
-    console.log("u_id", userIDContext)
     const data = {
       userId: userIDContext
     }
@@ -63,7 +85,7 @@ const Dashboard = () => {
   }
 
   useEffect(() => {
-    // handleAcceptMessages()
+    handleGetMessages()
     getAcceptMessage()
   }, [])
 
@@ -73,19 +95,6 @@ const Dashboard = () => {
 
   return (
     <div className="w-full min-h-screen">
-
-      {/* <nav className="p-6 md:p-8 shadow-md bg-gray-900 text-white">
-        <div className="container mx-auto flex flex-col md:flex-row justify-between items-center">
-          <a href="#" className="text-xl font-bold mb-4 md:mb-0">Feedback Vault</a>
-          <span className="mr-4">Welcome, sachingahlot2213</span>
-          <button
-            className="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-input hover:bg-accent hover:text-accent-foreground h-10 px-4 py-2 w-full md:w-auto bg-slate-100 text-black"
-            onClick={() => alert('Logging out...')}
-          >
-            Logout
-          </button>
-        </div>
-      </nav> */}
 
       <nav className='px-8 w-full text-white flex justify-between items-center bg-black  h-28 '>
         <div className="container mx-auto flex flex-col md:flex-row justify-between items-center">
@@ -140,7 +149,11 @@ const Dashboard = () => {
           </svg>
         </button>
         <div className="mt-4 grid grid-cols-1 md:grid-cols-2 gap-6">
-          <p>No messages to display.</p>
+          {
+            allMessages.map((msg, index) => (
+              <p key={index}>{msg.content}</p>
+            ))
+          }
         </div>
       </div>
     </div>
