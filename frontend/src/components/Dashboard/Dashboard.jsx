@@ -3,7 +3,7 @@ import { useAuth } from '../../context/AuthContext';
 import { useUser } from '../../context/UserContext';
 import axios from 'axios';
 
-const Dashboard = () => {
+const Dashboard = ({handleLogout}) => {
 
   const [acceptMessages, setAcceptMessages] = useState(false);
   const [allMessages, setAllMessages] = useState([])
@@ -47,7 +47,7 @@ const Dashboard = () => {
       userid: userIDContext
     }
     try {
-    
+
       const response = await axios.post("http://localhost:3000/messages", data)
 
       if (response.status >= 200 && response.status < 300) {
@@ -85,13 +85,11 @@ const Dashboard = () => {
   }
 
   useEffect(() => {
-    handleGetMessages()
+
     getAcceptMessage()
   }, [])
 
-  const handleLogout = () => {
-    logout()
-  }
+
 
   return (
     <div className="w-full min-h-screen">

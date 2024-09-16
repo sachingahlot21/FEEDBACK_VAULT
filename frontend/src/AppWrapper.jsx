@@ -5,10 +5,12 @@ import { UserProvider } from './context/UserContext';
 
 export default function AppWrapper() {
   return (
-    <AuthProvider>
-      <UserProvider>
+
+    <UserProvider>
+      <AuthProvider>
         <App />
-      </UserProvider>
-    </AuthProvider>
+      </AuthProvider>
+    </UserProvider>
+
   );
 }

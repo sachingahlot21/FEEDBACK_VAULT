@@ -6,7 +6,7 @@ import { BrowserRouter as Router, useNavigate, Route, Routes, Navigate } from 'r
 import { useAuth } from '../../context/AuthContext';
 import { useUser } from '../../context/UserContext'
 
-export default function Login({ onLogin }) {
+export default function Login({handleLogin}) {
   const [userId, setUserId] = useState('')
   const [userPassword, setUserPassword] = useState('')
 
@@ -20,6 +20,7 @@ export default function Login({ onLogin }) {
       email: userId,
       password: userPassword
     }
+    console.log(data)
     try {
       const response = await axios.post('http://localhost:3000/signin', data)
       if (response.status > 200) {
@@ -28,7 +29,7 @@ export default function Login({ onLogin }) {
         // console.log("res", response.data.user.username)
         setUserNameContext(response.data.user.username)
         setUserIDContext(response.data.user._id)
-        login('123')
+        handleLogin('123')
         navigate('/dashboard')
         setUserId('')
         setUserPassword('')

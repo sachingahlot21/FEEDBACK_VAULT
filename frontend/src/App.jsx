@@ -7,33 +7,59 @@ import Dashboard from './components/Dashboard/Dashboard'
 import { useEffect, useState } from 'react';
 import { useAuth, AuthProvider } from './context/AuthContext';
 import Public from './components/Public/Public';
+import { useNavigate } from 'react-router-dom';
 
 function App() {
 
-  const { isAuthenticated, setIsAuthenticated } = useAuth();
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+
+  const { setAuthToken } = useAuth()
+
   console.log("isAuth?", isAuthenticated)
 
+  const navigate = useNavigate()
+
   useEffect(() => {
-    const token = localStorage.getItem('token');
+    const token = sessionStorage.getItem('token');
+    console.log("token_ue", token)
     if (token) {
-      // Ideally, you would validate the token here
+      console.log("kkk")
       setIsAuthenticated(true);
     } else {
       setIsAuthenticated(false);
     }
-  }, [setIsAuthenticated]);
+  }, []);
 
-  
+  const login = (token) => {
+    sessionStorage.setItem('token', token);
+    setAuthToken(token)
+    setIsAuthenticated(true);
+  };
+
+  const logout = () => {
+    sessionStorage.removeItem('token');
+    navigate('/')
+    setIsAuthenticated(false);
+  };
+
+
+
+
   return (
     <>
-      <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/signup" element={<Signup />} />
-        <Route path='/public/:username' element={<Public />} />
-        <Route path="/dashboard" element={isAuthenticated ? <Dashboard /> : <Navigate to="/login" />}
-        />
-      </Routes>
+      {
+        isAuthenticated ?
+         (<Dashboard handleLogout={logout} />) 
+         : 
+         (<Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/login" element={<Login handleLogin={login} />} />
+          <Route path="/signup" element={<Signup />} />
+          <Route path='/public/:username' element={<Public />} />
+        </Routes>
+        )
+      }
+
     </>
   )
 }

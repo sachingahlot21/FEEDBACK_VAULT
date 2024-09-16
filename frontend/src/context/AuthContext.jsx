@@ -7,34 +7,11 @@ export const useAuth = () => useContext(AuthContext)
 
 export const AuthProvider = ({ children }) => {
 
-    const [isAuthenticated, setIsAuthenticated] = useState(false);
     const[authToken , setAuthToken] = useState('')
-    
+  
     const navigate = useNavigate()
-
-    useEffect(() => {
-      const token = sessionStorage.getItem('token');
-      if (token) {
-        setIsAuthenticated(true);
-      } else {
-        setIsAuthenticated(false);
-      }
-    }, []);
-  
-    const login = (token) => {
-      sessionStorage.setItem('token', token);
-      setAuthToken(token)
-      setIsAuthenticated(true);
-    };
-  
-    const logout = () => {
-      sessionStorage.removeItem('token');
-      navigate('/')
-      setIsAuthenticated(false); 
-    };
-  
     return (
-      <AuthContext.Provider value={{ isAuthenticated,setIsAuthenticated, login, logout,authToken }}>
+      <AuthContext.Provider value={{setAuthToken,authToken }}>
         {children}
       </AuthContext.Provider>
     );
