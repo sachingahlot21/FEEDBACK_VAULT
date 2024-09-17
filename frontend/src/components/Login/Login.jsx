@@ -20,18 +20,20 @@ export default function Login({handleLogin}) {
       email: userId,
       password: userPassword
     }
-    console.log(data)
+   
     try {
       const response = await axios.post('http://localhost:3000/signin', data)
       if (response.status > 200) {
 
         // console.log("res", response.data.user._id)
         // console.log("res", response.data.user.username)
+        console.log(response)
         setUserNameContext(response.data.user.username)
         setUserIDContext(response.data.user._id)
-        handleLogin('123')
+        handleLogin(response.data.token)
         navigate('/dashboard')
         setUserId('')
+        //
         setUserPassword('')
 
       }

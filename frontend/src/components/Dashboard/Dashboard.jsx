@@ -3,7 +3,7 @@ import { useAuth } from '../../context/AuthContext';
 import { useUser } from '../../context/UserContext';
 import axios from 'axios';
 
-const Dashboard = ({handleLogout}) => {
+const Dashboard = ({ handleLogout }) => {
 
   const [acceptMessages, setAcceptMessages] = useState(false);
   const [allMessages, setAllMessages] = useState([])
@@ -12,11 +12,14 @@ const Dashboard = ({handleLogout}) => {
 
 
   const handleCopy = () => {
-    navigator.clipboard.writeText('https://truefeedback.in/u/sachingahlot2213')
+    navigator.clipboard.writeText(`http://localhost:5173/public/${userNameContext}`)
       .then(() => alert('Link copied to clipboard!'))
       .catch(err => console.error('Failed to copy: ', err));
   };
 
+  const handleRefresh = () =>{
+    handleGetMessages()
+  }
 
   const handleToggle = async () => {
     const data = {
@@ -38,8 +41,6 @@ const Dashboard = ({handleLogout}) => {
       console.log("message request failed by error", error)
     }
   }
-
-
 
   const handleGetMessages = async () => {
 
@@ -63,8 +64,6 @@ const Dashboard = ({handleLogout}) => {
 
   }
 
-
-
   const getAcceptMessage = async () => {
     const data = {
       userId: userIDContext
@@ -84,8 +83,12 @@ const Dashboard = ({handleLogout}) => {
     }
   }
 
-  useEffect(() => {
+  const handleDelete = (index) => {
+    setAllMessages(messages.filter((_, i) => i !== index));
+  };
 
+  useEffect(() => {
+    handleGetMessages()
     getAcceptMessage()
   }, [])
 
@@ -120,38 +123,60 @@ const Dashboard = ({handleLogout}) => {
             </button>
           </div>
         </div>
-        <div className="mb-4">
+        <div className="flex items-center mb-4">
           <button
             type="button"
             role="switch"
             aria-checked={acceptMessages}
             onClick={handleToggle}
-            className={`peer inline-flex h-6 w-11 shrink-0 cursor-pointer items-center rounded-full border-2 border-transparent transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background ${acceptMessages ? 'bg-primary' : 'bg-input'}`}
+            className={`relative inline-flex items-center h-8 w-14 cursor-pointer rounded-full transition-colors ${acceptMessages ? 'bg-green-500' : 'bg-gray-300'}`}
           >
             <span
-              className={`text-xl bg-gray-400   pointer-events-none block h-5 w-5 rounded-full bg-background shadow-lg ring-0 transition-transform ${acceptMessages ? 'translate-x-5' : 'translate-x-0'}`}
-            ></span>
+              className={`absolute left-1 top-1 block h-6 w-6 bg-white rounded-full shadow-md transform transition-transform ${acceptMessages ? 'translate-x-6' : 'translate-x-1'}`}
+            />
           </button>
-          <span className="ml-2 text-xl ">Accept Messages: {acceptMessages ? 'On' : 'Off'}</span>
+          <span className="ml-4 text-lg font-medium text-gray-700">
+            Accept Messages: {acceptMessages ? 'On' : 'Off'}
+          </span>
         </div>
         <div data-orientation="horizontal" role="none" className="shrink-0 bg-border h-[1px] w-full"></div>
         <button
-          className="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-10 px-4 py-2 mt-4"
-          onClick={() => alert('Refreshing...')}
+          className="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-transparent bg-gray-100 hover:bg-gray-200 hover:text-gray-900 h-10 px-4 py-2 mt-4"
+          onClick={() => handleRefresh()}
         >
-          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-refresh-ccw h-4 w-4">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="24"
+            height="24"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            className="h-5 w-5"
+          >
             <path d="M21 12a9 9 0 0 0-9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path>
             <path d="M3 3v5h5"></path>
             <path d="M3 12a9 9 0 0 0 9 9 9.75 9.75 0 0 0 6.74-2.74L21 16"></path>
             <path d="M16 16h5v5"></path>
           </svg>
         </button>
-        <div className="mt-4 grid grid-cols-1 md:grid-cols-2 gap-6">
-          {
-            allMessages.map((msg, index) => (
-              <p key={index}>{msg.content}</p>
-            ))
-          }
+
+        <div className="mt-4 p-4 bg-gray-100 rounded-lg shadow-lg">
+          <div className="flex flex-col gap-4">
+            {allMessages.map((msg, index) => (
+              <div key={index} className="flex items-center justify-between p-4 bg-white rounded-lg shadow-sm">
+                <p className="text-gray-800">{msg.content}</p>
+                <button
+                  onClick={() => handleDelete(index)}
+                  className="text-red-500 hover:text-red-700 font-semibold"
+                >
+                  Delete
+                </button>
+              </div>
+            ))}
+          </div>
         </div>
       </div>
     </div>

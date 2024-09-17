@@ -12,18 +12,13 @@ import { useNavigate } from 'react-router-dom';
 function App() {
 
   const [isAuthenticated, setIsAuthenticated] = useState(false);
-
   const { setAuthToken } = useAuth()
-
-  console.log("isAuth?", isAuthenticated)
 
   const navigate = useNavigate()
 
   useEffect(() => {
     const token = sessionStorage.getItem('token');
-    console.log("token_ue", token)
     if (token) {
-      console.log("kkk")
       setIsAuthenticated(true);
     } else {
       setIsAuthenticated(false);
@@ -42,25 +37,19 @@ function App() {
     setIsAuthenticated(false);
   };
 
-
-
-
   return (
-    <>
-      {
-        isAuthenticated ?
-         (<Dashboard handleLogout={logout} />) 
-         : 
-         (<Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/login" element={<Login handleLogin={login} />} />
-          <Route path="/signup" element={<Signup />} />
-          <Route path='/public/:username' element={<Public />} />
-        </Routes>
-        )
-      }
 
-    </>
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route path="/login" element={isAuthenticated ? <Navigate to="/dashboard" /> : <Login handleLogin={login} />} />
+        <Route path="/signup" element={<Signup />} />
+        <Route path="/public/:username" element={<Public />} />
+        <Route
+          path="/dashboard"
+          element={isAuthenticated ? <Dashboard handleLogout={logout} /> : <Navigate to="/login" />}
+        />
+      </Routes>
+  
   )
 }
 

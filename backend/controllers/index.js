@@ -121,7 +121,9 @@ async function handleUserLogin(req, res) {
         // );
 
         const payload = {
-            email: email
+            email: email,
+            userId: user._id,
+            userName:user.username
         }
         const token = generateToken(payload)
         res.status(201).json({
@@ -269,11 +271,21 @@ async function getAllMessage(req, res) {
     }
 }
 
+
+
 async function suggestQuestions(req, res) {
 
     const OPENAI_API_KEY = process.env.OPENAI_API_KEY;
 
     console.log("called", OPENAI_API_KEY)
+
+    const instance = axios.create({
+        baseURL: 'https://api.openai.com/v1/engines/davinci-codex/completions', // Change endpoint if needed
+        headers: {
+          'Authorization': `Bearer ${OPENAI_API_KEY}`,
+          'Content-Type': 'application/json',
+        },
+      });
 
     const prompt = "Create a list of three open-ended and engaging questions formatted as a single string. Each question should be separated by '||'. These questions are for an anonymous social messaging platform, like Qooh.me, and should be suitable for a diverse audience. Avoid personal or sensitive topics, focusing instead on universal themes that encourage friendly interaction. For example, your output should be structured like this: 'What’s a hobby you’ve recently started?||If you could have dinner with any historical figure, who would it be?||What’s a simple thing that makes you happy?'. Ensure the questions are intriguing, foster curiosity, and contribute to a positive and welcoming conversational environment.";
 
@@ -297,6 +309,17 @@ async function suggestQuestions(req, res) {
     } catch (error) {
         res.status(500).send(error.message);
     }
+
+    try {
+        const response = await instance.post('', {
+          prompt: prompt,
+          max_tokens: 50, // Adjust as needed
+        });
+        return response.data.choices[0].text.trim();
+      } catch (error) {
+        console.error('Error fetching suggestions:', error);
+        return res.status(500).send(error.message);;
+      }
 }
 
 module.exports = { handleUserSignup, getAcceptMessage, verifyEmail, handleUserLogin, acceptMessage, sendMessage, getAllMessage, suggestQuestions }
