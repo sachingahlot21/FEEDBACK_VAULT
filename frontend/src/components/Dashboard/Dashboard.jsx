@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import { useUser } from '../../context/UserContext';
+import DeleteModal from '../Modal/DeleteModal';
 import axios from 'axios';
 
 const Dashboard = ({ handleLogout }) => {
@@ -17,7 +18,7 @@ const Dashboard = ({ handleLogout }) => {
       .catch(err => console.error('Failed to copy: ', err));
   };
 
-  const handleRefresh = () =>{
+  const handleRefresh = () => {
     handleGetMessages()
   }
 
@@ -51,15 +52,25 @@ const Dashboard = ({ handleLogout }) => {
 
       const response = await axios.post("http://localhost:3000/messages", data)
 
-      if (response.status >= 200 && response.status < 300) {
-
-        setAllMessages(response.data.messages)
+      if (response.status === 200) {
+        if (response.data.messages) {
+          setAllMessages(response.data.messages);
+        } else {
+          console.error('No messages found in response data.');
+          setAllMessages([]);
+        }
+      } else if (response.status === 402) {
+        setAllMessages([]);
       } else {
-        console.log(`Unexpected status code: ${response.status}`);
+        console.error(`Unexpected status code: ${response.status}`);
+        setAllMessages([]);
       }
     }
     catch (error) {
-      console.log("error fetching messages...", error)
+      console.log("error fetching messages...", error.response.status)
+      if (error.response.status === 402) {
+        setAllMessages([])
+      }
     }
 
   }
@@ -83,8 +94,32 @@ const Dashboard = ({ handleLogout }) => {
     }
   }
 
-  const handleDelete = (index) => {
-    setAllMessages(messages.filter((_, i) => i !== index));
+  const handleDelete = async (id) => {
+    console.log(id)
+    try {
+      const response = await axios.delete(`http://localhost:3000/${userIDContext}/delete_message/${id}`)
+      if (response.status === 200) {
+        handleGetMessages()
+      }
+    }
+    catch (error) {
+      console.log("delete message error...", error)
+    }
+  };
+
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [messageId , setMessageId] = useState()
+
+  const openModal = (id) => {
+    setIsModalOpen(true)
+    setMessageId(id)
+   
+  };
+  const closeModal = () => setIsModalOpen(false);
+
+  const handleConfirm = () => {
+    handleDelete(messageId)
+    closeModal();
   };
 
   useEffect(() => {
@@ -165,20 +200,31 @@ const Dashboard = ({ handleLogout }) => {
 
         <div className="mt-4 p-4 bg-gray-100 rounded-lg shadow-lg">
           <div className="flex flex-col gap-4">
-            {allMessages.map((msg, index) => (
-              <div key={index} className="flex items-center justify-between p-4 bg-white rounded-lg shadow-sm">
-                <p className="text-gray-800">{msg.content}</p>
-                <button
-                  onClick={() => handleDelete(index)}
-                  className="text-red-500 hover:text-red-700 font-semibold"
-                >
-                  Delete
-                </button>
-              </div>
-            ))}
+            {
+              allMessages.length < 1 ?
+                "No message to display..." :
+
+                allMessages.map((msg, index) => (
+                  <div key={index} className="flex items-center justify-between p-4 bg-white rounded-lg shadow-sm">
+                    <p className="text-gray-800">{msg.content}</p>
+                    <button
+                      onClick={() => openModal(msg._id)}
+                      className="text-red-500 hover:text-red-700 font-semibold"
+                    >
+                      Delete
+                    </button>
+                  </div>
+                ))
+
+            }
           </div>
         </div>
       </div>
+      <DeleteModal
+        isOpen={isModalOpen}
+        onClose={closeModal}
+        onConfirm={handleConfirm}
+      />
     </div>
   );
 };

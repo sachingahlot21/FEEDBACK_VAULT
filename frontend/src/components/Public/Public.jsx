@@ -9,10 +9,12 @@ import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
 function Public() {
+
   const { username } = useParams();
+
   const [messagesFromAI, setMessagesFromAI] = useState([
-    'What hidden talent do you possess?', 
-    'What’s a book you’ve re-read multiple times?', 
+    'What hidden talent do you possess?',
+    'What’s a book you’ve re-read multiple times?',
     'What’s a small act of kindness that impacted you?'
   ])
   const [message, setMessage] = useState("")
@@ -26,15 +28,21 @@ function Public() {
   const notifySuccess = () => toast("Message sent successfully !");
   const notifyFailed = () => toast("Error occured / User Not Acceping Messages !");
   const tooManyReq = () => toast("Too Many Requests !")
+  const min12Length = () => toast("Message must be at least 12 characters.")
 
   const handleSubmit = async (e) => {
 
     e.preventDefault()
+   
+    if(data.content.length < 12){
+      min12Length()
+      return
+    }
     setWait(true)
     try {
       const response = await axios.post('http://localhost:3000/send-message', data)
       if (response.status === 201) {
-        console.log("sent")
+        setMessage("")
         notifySuccess()
         setWait(false)
       }
@@ -44,6 +52,7 @@ function Public() {
       }
     }
     catch (err) {
+      console.log(err)
       notifyFailed()
       setWait(false)
     }
@@ -51,7 +60,7 @@ function Public() {
   }
 
   const handleSugguestMessages = async () => {
-   
+
     let api_key = import.meta.env.VITE_gemini_api_key
 
     try {
@@ -60,7 +69,7 @@ function Public() {
           url: `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key=${api_key}`,
           method: "post",
           data: {
-            contents: [{ parts: [{ text: "Create a array of three open-ended and engaging questions formatted as a single string in double . Length of the question should be between 7-10 words. These questions are for an anonymous social messaging platform, like Qooh.me, and should be suitable for a diverse audience. Avoid personal or sensitive topics, focusing instead on universal themes that encourage friendly interaction. For example, your output should be structured like this in an array: ['What’s a hobby you’ve recently started?' , 'If you could have dinner with any historical figure, who would it be? ' , 'What’s a simple thing that makes you happy?']. Ensure the questions are intriguing, foster curiosity, and contribute to a positive and welcoming conversational environment."  }] }],
+            contents: [{ parts: [{ text: "Create a array of three open-ended and engaging questions formatted as a single string in double . Length of the question should be between 7-10 words. These questions are for an anonymous social messaging platform, like Qooh.me, and should be suitable for a diverse audience. Avoid personal or sensitive topics, focusing instead on universal themes that encourage friendly interaction. For example, your output should be structured like this in an array: ['What’s a hobby you’ve recently started?' , 'If you could have dinner with any historical figure, who would it be? ' , 'What’s a simple thing that makes you happy?']. Ensure the questions are intriguing, foster curiosity, and contribute to a positive and welcoming conversational environment." }] }],
           }
         })
 
@@ -82,6 +91,8 @@ function Public() {
       tooManyReq()
     }
   }
+
+  
 
   return (
     <div className="w-full min-h-screen bg-white text-black p-8">

@@ -247,24 +247,59 @@ async function sendMessage(req, res) {
 
 }
 
+// async function getAllMessage(req, res) {
+//     const { userid } = req.body;
+//     const userId = new mongoose.Types.ObjectId(userid);
+//     console.log("galm", userid)
+
+//     try {
+//         const user = await User.aggregate([
+//             { $match: { _id: userId } },
+//             { $unwind: '$messages' },
+//             { $sort: { 'messages.createdAt': -1 } },
+//             { $group: { _id: '$_id', messages: { $push: '$messages' } } },
+//         ]).exec();
+
+//         if (!user || user.length === 0 || !user[0].messages) {
+//             return res.status(404).json({ message: 'User not found', success: false });
+//         }
+
+//         return res.status(200).json({ messages: user[0].messages });
+//     } catch (error) {
+//         console.error('An unexpected error occurred:', error);
+//         return res.status(500).json({ message: 'Internal server error', success: false });
+//     }
+// }
+
 async function getAllMessage(req, res) {
     const { userid } = req.body;
+
+    // Validate ObjectId
+    if (!mongoose.Types.ObjectId.isValid(userid)) {
+        return res.status(400).json({ message: 'Invalid User ID format', success: false });
+    }
+
     const userId = new mongoose.Types.ObjectId(userid);
-    console.log("galm", userid)
+    console.log("User ID (ObjectId):", userId);
 
     try {
-        const user = await User.aggregate([
-            { $match: { _id: userId } },
-            { $unwind: '$messages' },
-            { $sort: { 'messages.createdAt': -1 } },
-            { $group: { _id: '$_id', messages: { $push: '$messages' } } },
-        ]).exec();
+       
+        const user = await User.findById(userId).exec();
 
-        if (!user || user.length === 0) {
+     
+        if (!user) {
             return res.status(404).json({ message: 'User not found', success: false });
         }
 
-        return res.status(200).json({ messages: user[0].messages });
+       
+        if (!user.messages || user.messages.length === 0) {
+            return res.status(402).json({ message: 'No messages found for this user', success: false });
+        }
+
+        
+        const sortedMessages = user.messages.sort((a, b) => b.createdAt - a.createdAt);
+
+        return res.status(200).json({ messages: sortedMessages });
     } catch (error) {
         console.error('An unexpected error occurred:', error);
         return res.status(500).json({ message: 'Internal server error', success: false });
@@ -272,6 +307,38 @@ async function getAllMessage(req, res) {
 }
 
 
+async function handleDeleteMessage(req, res) {
+    const { userId, messageId } = req.params; // Extract parameters from the URL
+    console.log(userId , messageId)
+  
+    if (!userId || !messageId) {
+      return res.status(400).json({ error: 'User ID and Message ID are required' });
+    }
+  
+    try {
+      const user = await User.findById(userId);
+  
+      if (!user) {
+        return res.status(404).json({ error: 'User not found' });
+      }
+  
+      const messageIndex = user.messages.findIndex(message => message._id.toString() === messageId);
+  
+      if (messageIndex === -1) {
+        return res.status(404).json({ error: 'Message not found' });
+      }
+  
+      user.messages.splice(messageIndex, 1);
+
+      await user.save();
+  
+      res.status(200).json({ success: 'Message deleted successfully' });
+    } catch (error) {
+      console.error('Error deleting message:', error);
+      res.status(500).json({ error: 'Internal Server Error' });
+    }
+  }
+  
 
 async function suggestQuestions(req, res) {
 
@@ -322,4 +389,4 @@ async function suggestQuestions(req, res) {
       }
 }
 
-module.exports = { handleUserSignup, getAcceptMessage, verifyEmail, handleUserLogin, acceptMessage, sendMessage, getAllMessage, suggestQuestions }
+module.exports = { handleUserSignup, getAcceptMessage, verifyEmail, handleUserLogin, acceptMessage, sendMessage, getAllMessage, suggestQuestions,handleDeleteMessage }
