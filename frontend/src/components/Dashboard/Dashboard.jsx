@@ -108,12 +108,12 @@ const Dashboard = ({ handleLogout }) => {
   };
 
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [messageId , setMessageId] = useState()
+  const [messageId, setMessageId] = useState()
 
   const openModal = (id) => {
     setIsModalOpen(true)
     setMessageId(id)
-   
+
   };
   const closeModal = () => setIsModalOpen(false);
 
