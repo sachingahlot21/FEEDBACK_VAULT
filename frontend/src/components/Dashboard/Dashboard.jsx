@@ -209,7 +209,7 @@ const Dashboard = ({ handleLogout }) => {
                     <p className="text-gray-800">{msg.content}</p>
                     <button
                       onClick={() => openModal(msg._id)}
-                      className="text-red-500 hover:text-red-700 font-semibold"
+                      className="text-red-400 hover:text-red-700 font-semibold"
                     >
                       Delete
                     </button>

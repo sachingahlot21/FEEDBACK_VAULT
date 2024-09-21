@@ -26,8 +26,8 @@ function Public() {
   }
 
   const notifySuccess = () => toast("Message sent successfully !");
-  const notifyFailed = () => toast("Error occured / User Not Acceping Messages !");
-  const tooManyReq = () => toast("Too Many Requests !")
+  const notifyFailed = () => toast("Error occured or User Not Acceping Messages !");
+  const tooManyReq = () => toast("Too Many Requests ! Try again later!")
   const min12Length = () => toast("Message must be at least 12 characters.")
 
   const handleSubmit = async (e) => {
