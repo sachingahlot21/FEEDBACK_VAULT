@@ -3,6 +3,8 @@ import { useState } from 'react';
 import { Link } from 'react-router-dom'
 import axios from 'axios';
 import { BrowserRouter as Router, useNavigate, Route, Routes, Navigate } from 'react-router-dom';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 export default function Signup() {
 
@@ -11,6 +13,20 @@ export default function Signup() {
   const [password, setPassword] = useState('');
 
   const navigate = useNavigate()
+
+  const notifysignupUnSuccess = (error_id) => {
+    if (error_id === 'signup_error_1')
+      toast("Username already taken");
+    else if (error_id === 'signup_error_2')
+      toast("User already exist with this email");
+    else if (error_id === 'signup_error_3')
+      toast("Error occured while sending verification code");
+    else if (error_id === 'signup_error_4')
+      toast("User creation or update failed");
+    else if (error_id === 'signup_error_5')
+      toast("Error! User registration failed...");
+  }
+
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -37,6 +53,22 @@ export default function Signup() {
     }
     catch (error) {
       console.log("signup error", error)
+
+      if (error.response.data.errorId === "signup_error_1") {
+        notifysignupUnSuccess("signup_error_1")
+      }
+      else if (error.response.data.errorId === "signup_error_2") {
+        notifysignupUnSuccess("signup_error_2")
+      }
+      else if (error.response.data.errorId === "signup_error_3") {
+        notifysignupUnSuccess("signup_error_3")
+      }
+      else if (error.response.data.errorId === "signup_error_4") {
+        notifysignupUnSuccess("signup_error_4")
+      }
+      else {
+        notifysignupUnSuccess("signup_error_5")
+      }
     }
   }
 
@@ -51,6 +83,10 @@ export default function Signup() {
           </div>
         </div>
 
+        <ToastContainer
+          autoClose={3000}
+          hideProgressBar={true}
+        />
         <div className='h-[65%] w-[80%] md:w-[25%] m-auto  p-2'>
 
           <form onSubmit={handleSubmit} className='mb-2 h-[85%]'>

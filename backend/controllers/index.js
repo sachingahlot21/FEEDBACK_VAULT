@@ -12,14 +12,14 @@ const { jwtAuthMiddleware, generateToken } = require('../jwt')
 
 async function handleUserSignup(req, res) {
     try {
-        const body = await req.body
-        const { username, email, password } = body
+        const { username, email, password } = await req.body
+      
 
         const existingVerifiedUserByUsername = await User.findOne(
             { username, isVerified: true })
 
         if (existingVerifiedUserByUsername) {
-            return res.status(400).json({ message: "Username already taken" })
+            return res.status(400).json({ message: "Username already taken" , errorId: "signup_error_1" })
         }
 
         const existingUserByMail = await User.findOne({ email })
@@ -29,7 +29,7 @@ async function handleUserSignup(req, res) {
         if (existingUserByMail) {
 
             if (existingUserByMail.isVerified) {
-                return res.status(400).json({ message: "User already exist with this email" })
+                return res.status(400).json({ message: "User already exist with this email", errorId: "signup_error_2" })
             }
             else {
                 const hashedPassword = await bcrypt.hash(password, 10);
@@ -61,7 +61,7 @@ async function handleUserSignup(req, res) {
             console.log(emailResponse)
 
             if (!emailResponse.response) {
-                return res.status(500).json({ message: "error occured while sending verification code" })
+                return res.status(500).json({ message: "error occured while sending verification code" , errorId: "signup_error_3" })
             }
             console.log("successfully created new user..wait for verification code...", newUser)
 
@@ -74,7 +74,7 @@ async function handleUserSignup(req, res) {
         // }
 
         if (!savedUser || !savedUser._id) {
-            return res.status(500).json({ message: "User creation or update failed" });
+            return res.status(500).json({ message: "User creation or update failed" , errorId: "signup_error_4" });
         }
 
         const payload = {
@@ -90,7 +90,7 @@ async function handleUserSignup(req, res) {
 
     catch (error) {
         console.log(error)
-        return res.status(500).json({ message: "ERROR! Registering user..." })
+        res.status(500).json({ message: "ERROR! Registering user..." , errorId: "signup_error_5" })
     }
 }
 
@@ -101,17 +101,17 @@ async function handleUserLogin(req, res) {
         const user = await User.findOne({ email });
 
         if (!user) {
-            return res.status(400).json({ message: "Invalid email or password" });
+            return res.status(400).json({ message: "No user found with this email" , errorId: "login_error_1"} );
         }
 
         if (!user.isVerified) {
-            return res.status(400).json({ message: "Account not verified. Please check your email." });
+            return res.status(400).json({ message: "Account not verified. Please check your email." , errorId: "login_error_2" });
         }
 
         const isMatch = await bcrypt.compare(password, user.password);
 
         if (!isMatch) {
-            return res.status(400).json({ message: "Invalid email or password" });
+            return res.status(400).json({ message: "Invalid password !", errorId: "login_error_3" });
         }
 
         // const token = await jwt.sign(

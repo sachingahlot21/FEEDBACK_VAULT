@@ -6,34 +6,45 @@ import { BrowserRouter as Router, useNavigate, Route, Routes, Navigate } from 'r
 import { useAuth } from '../../context/AuthContext';
 import { useUser } from '../../context/UserContext'
 
-export default function Login({handleLogin}) {
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+
+export default function Login({ handleLogin }) {
   const [userId, setUserId] = useState('')
   const [userPassword, setUserPassword] = useState('')
 
   const { setUserIDContext, setUserNameContext } = useUser()
   const { login } = useAuth();
-  const navigate = useNavigate()
+  const navigate = useNavigate();
+
+  const notifyloginUnSuccess = (error_id) => {
+    if (error_id === 'login_error_1')
+      toast("No user found with this email");
+    else if (error_id === 'login_error_2')
+      toast("Account not verified. Please check your email.");
+    else if (error_id === 'login_error_3')
+      toast("Invalid password !");
+    else if (error_id === 'login_error_4')
+      toast("Error occured !");
+  }
 
   const handleSubmit = async (e) => {
+
     e.preventDefault();
+
     const data = {
       email: userId,
       password: userPassword
     }
-   
+
     try {
       const response = await axios.post('http://localhost:3000/signin', data)
       if (response.status > 200) {
-
-        // console.log("res", response.data.user._id)
-        // console.log("res", response.data.user.username)
-        console.log(response)
         setUserNameContext(response.data.user.username)
         setUserIDContext(response.data.user._id)
         handleLogin(response.data.token)
         navigate('/dashboard')
         setUserId('')
-        //
         setUserPassword('')
 
       }
@@ -41,13 +52,27 @@ export default function Login({handleLogin}) {
         alert("failed to register...")
         setUserId('')
         setUserPassword('')
+        notifyloginUnSuccess()
       }
     }
     catch (error) {
-      console.log("signup error", error)
+
+      if (error.response.data.errorId === "login_error_1") {
+        notifyloginUnSuccess("login_error_1")
+      }
+      else if (error.response.data.errorId === "login_error_2") {
+        notifyloginUnSuccess("login_error_2")
+      }
+      else if (error.response.data.errorId === "login_error_3") {
+        notifyloginUnSuccess("login_error_3")
+      }
+      else {
+        notifyloginUnSuccess("login_error_4")
+      }
+
     }
   }
-  
+
 
   return (
     <div className=' w-full  flex justify-center  items-center h-screen bg-black'>
@@ -60,10 +85,15 @@ export default function Login({handleLogin}) {
           </div>
         </div>
 
+        <ToastContainer
+          autoClose={3000}
+          hideProgressBar={true}
+        />
+
         <div className='h-[50%] w-[80%] md:w-[25%] m-auto  p-2'>
           <form onSubmit={handleSubmit} className='h-[80%]'>
             <div className='h-[40%]   flex flex-col'>
-              <label className='text-2xl' htmlFor="userid">Email/Username</label>
+              <label className='text-2xl' htmlFor="userid">Email</label>
               <input className='border border-1px-solid h-[50%] rounded mt-2'
                 type='text'
                 id='userid'

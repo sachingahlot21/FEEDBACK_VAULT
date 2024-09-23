@@ -4,6 +4,9 @@ import { useUser } from '../../context/UserContext';
 import DeleteModal from '../Modal/DeleteModal';
 import axios from 'axios';
 
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+
 const Dashboard = ({ handleLogout }) => {
 
   const [acceptMessages, setAcceptMessages] = useState(false);
@@ -11,15 +14,23 @@ const Dashboard = ({ handleLogout }) => {
   const { logout } = useAuth()
   const { userNameContext, userIDContext } = useUser()
 
+  const notifySuccess = () => toast("Link Copied !");
+  const notifyMessageAcceptanceStatus = () => toast("Message acceptance status updated successfully");
+  const notifyMessageAcceptanceStatusFailed = () => toast("Error occured !");
+  const notifyRefresh = () => toast("Messages refreshed ! Showing latest messages.")
+const notifyDeleteSuccessful = () => toast("Message deleted")
+const notifyDeleteUnSuccessful = () => toast("Error! Message not deleted")
 
   const handleCopy = () => {
     navigator.clipboard.writeText(`http://localhost:5173/public/${userNameContext}`)
-      .then(() => alert('Link copied to clipboard!'))
+      .then(() => notifySuccess())
       .catch(err => console.error('Failed to copy: ', err));
   };
 
-  const handleRefresh = () => {
-    handleGetMessages()
+  const handleRefresh = async () => {
+    await handleGetMessages()
+    notifyRefresh()
+
   }
 
   const handleToggle = async () => {
@@ -32,10 +43,13 @@ const Dashboard = ({ handleLogout }) => {
       const response = await axios.post('http://localhost:3000/accept-message', data)
       if (response.status > 200) {
         console.log('request fulfilled...')
+
         setAcceptMessages(prevState => !prevState);
+        notifyMessageAcceptanceStatus()
       }
       else {
         console.log("failed to fulfill...")
+        notifyMessageAcceptanceStatusFailed()
       }
     }
     catch (error) {
@@ -99,11 +113,14 @@ const Dashboard = ({ handleLogout }) => {
     try {
       const response = await axios.delete(`http://localhost:3000/${userIDContext}/delete_message/${id}`)
       if (response.status === 200) {
+        notifyDeleteSuccessful()
         handleGetMessages()
+        
       }
     }
     catch (error) {
       console.log("delete message error...", error)
+      notifyDeleteUnSuccessful()
     }
   };
 
@@ -139,6 +156,12 @@ const Dashboard = ({ handleLogout }) => {
           <button onClick={handleLogout} className='bg-white text-black rounded px-8 py-2 text-xl'>Logout</button>
         </div>
       </nav>
+
+      <ToastContainer
+        autoClose={3000}
+        hideProgressBar={true}
+      />
+
       <div className="bg-white my-8 mx-4 md:mx-8 lg:mx-auto p-6 rounded w-full max-w-6xl">
         <h1 className="text-6xl font-bold mb-4">User Dashboard</h1>
         <div className="mb-4">
