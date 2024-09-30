@@ -90,7 +90,7 @@ async function handleUserSignup(req, res) {
 
     catch (error) {
         console.log(error)
-        res.status(500).json({ message: "ERROR! Registering user..." , errorId: "signup_error_5" })
+        res.status(500).json({ message: "ERROR! Registering user...TRY AGAIN" , errorId: "signup_error_5" })
     }
 }
 
