@@ -27,9 +27,35 @@ export default function Signup() {
       toast("Error! User registration failed...");
   }
 
+  //function_to_handleValidation
+  const handleSubmit = (e) => {
+    e.preventDefault()
+    let isValid = true
+    const regex = /^[a-zA-Z0-9]+@[a-zA-Z0-9]+\.[A-Za-z]+$/
+    const userNameRegex = /^[a-zA-Z\-]+$/
+    if (!regex.test(email)) {
+      console.log("Not a valid email")
+      isValid = false
+    }
+    if (password.length < 8) {
+      console.log("Length of password must be greater than or equal to 8")
+      isValid = false
+    }
+    if (!userNameRegex.test(username)) {
+      console.log("Your user name is not valid. Only characters A-Z, a-z and '-' are  acceptable.")
+      isValid = false
+    }
+    if (isValid) {
+      handleFormSubmit()
+    }
+    else{
+      console.log("error in submitting form")
+    }
+  }
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+  //function_to_handling_api
+  const handleFormSubmit = async () => {
+    
 
     const data = {
       username,
