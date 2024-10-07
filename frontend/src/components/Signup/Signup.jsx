@@ -25,37 +25,51 @@ export default function Signup() {
       toast("User creation or update failed");
     else if (error_id === 'signup_error_5')
       toast("Error! User registration failed...");
+
+    //signup_form_validations_errors
+    else if (error_id === 'signup_error_6')
+      toast("Invalid Email...");
+    else if (error_id === 'signup_error_7')
+      toast("Length of password must be greater than or equal to 8");
+    else if (error_id === 'signup_error_8')
+      toast("Your user name is not valid. Only characters A-Z, a-z and '-' are  acceptable.");
   }
 
   //function_to_handleValidation
   const handleSubmit = (e) => {
     e.preventDefault()
     let isValid = true
-    const regex = /^[a-zA-Z0-9]+@[a-zA-Z0-9]+\.[A-Za-z]+$/
+
+    const emailRegex = /^[a-zA-Z0-9]+@[a-zA-Z0-9]+\.[A-Za-z]+$/
     const userNameRegex = /^[a-zA-Z\-]+$/
-    if (!regex.test(email)) {
+    const passwordRegex = /^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*\W)(?!.* ).{8,16}$/
+
+    if (!emailRegex.test(email)) {
       console.log("Not a valid email")
+      notifysignupUnSuccess('signup_error_6')
       isValid = false
     }
-    if (password.length < 8) {
+    if (!passwordRegex.test(password)) {
       console.log("Length of password must be greater than or equal to 8")
+      notifysignupUnSuccess('signup_error_7')
       isValid = false
     }
     if (!userNameRegex.test(username)) {
       console.log("Your user name is not valid. Only characters A-Z, a-z and '-' are  acceptable.")
+      notifysignupUnSuccess('signup_error_8')
       isValid = false
     }
     if (isValid) {
       handleFormSubmit()
     }
-    else{
+    else {
       console.log("error in submitting form")
     }
   }
 
   //function_to_handling_api
   const handleFormSubmit = async () => {
-    
+
 
     const data = {
       username,
@@ -101,7 +115,6 @@ export default function Signup() {
   return (
     <div className=' w-full  flex justify-center  items-center h-screen bg-black'>
       <div className='w-full   h-[100%] bg-white '>
-
         <div className='h-[25%] flex justify-center items-center p-2 bg-gray-100  '>
           <div>
             <h1 className='text-6xl text-center font-bold'>Join Feedback Vault</h1>
