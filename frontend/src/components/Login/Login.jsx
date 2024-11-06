@@ -125,7 +125,6 @@ export default function Login({ handleLogin }) {
                     {showPassword ? <LuEye /> : <LuEyeOff />}
                   </button>)
                 }
-
               </div>
             </div>
             <div className='h-[20%]'>
