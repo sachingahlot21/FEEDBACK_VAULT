@@ -19,7 +19,7 @@ async function handleUserSignup(req, res) {
             { username, isVerified: true })
 
         if (existingVerifiedUserByUsername) {
-            return res.status(400).json({ message: "Username already taken" , errorId: "signup_error_1" })
+            return res.status(400).json({ message: "Username already taken..." , errorId: "signup_error_1" })
         }
 
         const existingUserByMail = await User.findOne({ email })
