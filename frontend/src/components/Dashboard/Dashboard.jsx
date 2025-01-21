@@ -22,7 +22,7 @@ const Dashboard = ({ handleLogout }) => {
   const notifyDeleteUnSuccessful = () => toast("Error! Message not deleted")
 
   const handleCopy = () => {
-    navigator.clipboard.writeText(`http://localhost:5173/public/${userNameContext}`)
+    navigator.clipboard.writeText(`${import.meta.env.VITE_REACT_APP_BASE_URL}/public/${userNameContext}`)
       .then(() => notifySuccess())
       .catch(err => console.error('Failed to copy: ', err));
   };
@@ -40,7 +40,7 @@ const Dashboard = ({ handleLogout }) => {
     }
 
     try {
-      const response = await axios.post('http://localhost:3000/accept-message', data)
+      const response = await axios.post(`${import.meta.env.VITE_REACT_APP_BACKEND_URL}/accept-message`, data)
       if (response.status > 200) {
         console.log('request fulfilled...')
 
@@ -64,7 +64,7 @@ const Dashboard = ({ handleLogout }) => {
     }
     try {
 
-      const response = await axios.post("http://localhost:3000/messages", data)
+      const response = await axios.post(`${import.meta.env.VITE_REACT_APP_BACKEND_URL}/messages`, data)
 
       if (response.status === 200) {
         if (response.data.messages) {
@@ -95,7 +95,7 @@ const Dashboard = ({ handleLogout }) => {
     }
 
     try {
-      const response = await axios.post('http://localhost:3000/get-accept-message', data)
+      const response = await axios.post(`${import.meta.env.VITE_REACT_APP_BACKEND_URL}/get-accept-message`, data)
       if (response.status >= 200) {
         setAcceptMessages(response.data.messageAcceptStatus)
       }
@@ -111,7 +111,7 @@ const Dashboard = ({ handleLogout }) => {
   const handleDelete = async (id) => {
     console.log(id)
     try {
-      const response = await axios.delete(`http://localhost:3000/${userIDContext}/delete_message/${id}`)
+      const response = await axios.delete(`${import.meta.env.VITE_REACT_APP_BACKEND_URL}/${userIDContext}/delete_message/${id}`)
       if (response.status === 200) {
         notifyDeleteSuccessful()
         handleGetMessages()
@@ -186,7 +186,7 @@ const Dashboard = ({ handleLogout }) => {
             disabled
             className="input text-lg md:text-xl input-bordered w-full p-4 mr-2"
             type="text"
-            value={`http://localhost:5173/public/${userNameContext}`}
+            value={`${import.meta.env.VITE_REACT_APP_BASE_URL}/public/${userNameContext}`}
           />
           <button
             className="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium bg-black text-white hover:bg-gray-800 h-10 px-4 py-2"

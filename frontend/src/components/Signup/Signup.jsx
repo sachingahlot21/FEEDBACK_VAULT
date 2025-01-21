@@ -77,7 +77,7 @@ export default function Signup() {
       password
     }
     try {
-      const response = await axios.post('http://localhost:3000/signup', data)
+      const response = await axios.post(`${import.meta.env.VITE_REACT_APP_BACKEND_URL}/signup`, data)
       if (response.status > 200) {
         navigate('/login')
         setUsername('');

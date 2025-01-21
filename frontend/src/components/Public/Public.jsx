@@ -2,6 +2,7 @@ import React, { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useParams } from 'react-router-dom';
 import axios from 'axios';
+import NotesUi from '../NotesUI/NotesUi';
 
 // require('dotenv').config();
 
@@ -20,6 +21,45 @@ function Public() {
   const [message, setMessage] = useState("")
   const [wait, setWait] = useState(false)
 
+  const userNotes = {
+    "userId": "12345",
+    "userName": "sachin91",
+    "messages": [
+      {
+        "messageId": "1",
+        "content": "Hey, how are you?",
+        "timestamp": "2025-01-16T09:00:00Z",
+        "contentType": "greeting"
+      },
+      {
+        "messageId": "2",
+        "content": "I was thinking about our meeting tomorrow.",
+        "timestamp": "2025-01-16T09:05:00Z",
+        "contentType": "planning"
+      },
+      {
+        "messageId": "3",
+        "content": "Do you have any updates on the project?",
+        "timestamp": "2025-01-16T09:10:00Z",
+        "contentType": "inquiry"
+      },
+      {
+        "messageId": "4",
+        "content": "Let's catch up later this afternoon.",
+        "timestamp": "2025-01-16T09:20:00Z",
+        "contentType": "arrange"
+      },
+      {
+        "messageId": "5",
+        "content": "Thanks for your help, I really appreciate it!",
+        "timestamp": "2025-01-16T09:30:00Z",
+        "contentType": "gratitude"
+      }
+
+    ]
+  }
+
+
   const data = {
     "username": username,
     "content": message
@@ -31,16 +71,14 @@ function Public() {
   const min12Length = () => toast("Message must be at least 12 characters.")
 
   const handleSubmit = async (e) => {
-
     e.preventDefault()
-   
-    if(data.content.length < 12){
+    if (data.content.length < 12) {
       min12Length()
       return
     }
     setWait(true)
     try {
-      const response = await axios.post('http://localhost:3000/send-message', data)
+      const response = await axios.post(`${import.meta.env.VITE_REACT_APP_BACKEND_URL}/send-message`, data)
       if (response.status === 201) {
         setMessage("")
         notifySuccess()
@@ -92,7 +130,7 @@ function Public() {
     }
   }
 
-  
+
 
   return (
     <div className="w-full min-h-screen bg-white text-black p-8">
@@ -101,7 +139,16 @@ function Public() {
         <h1 className="text-3xl font-bold mb-4">Public Profile Link</h1>
 
         <div className="bg-gray-100 p-6 rounded-lg shadow-lg">
-          <h2 className="text-xl font-semibold mb-4">Send Anonymous Message to {username}</h2>
+          <h2 className="text-xl font-semibold mb-2">Send Anonymous Message to {username}</h2>
+
+          <div>
+            <h2 className="text-l font-semibold mb-4">Notes from {username}</h2>
+            <div className='mb-4 flex gap-2'>
+              {
+                <NotesUi userNotes={userNotes} />
+              }
+            </div>
+          </div>
           <input
             type="text"
             value={message}
