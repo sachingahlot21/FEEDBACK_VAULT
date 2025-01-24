@@ -26,7 +26,7 @@ mongoose.connect(uri, { useNewUrlParser: true, useUnifiedTopology: true })
 app.use(express.urlencoded({ extended: false }))
 app.use(express.json())
 
-app.use('/', userRoute)
+app.get('/', userRoute)
 
 
 app.listen(PORT, () => console.log("APP STARTED AT PORT : ", PORT))
