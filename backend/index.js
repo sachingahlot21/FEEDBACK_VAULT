@@ -4,9 +4,7 @@ const mongoose = require('mongoose');
 const cors = require('cors')
 const app = express()
 
-app.use(cors({
-  allowedHeaders: ['Content-Type', 'Authorization'] // Include other headers if needed
-}));
+app.use(cors());
 
 const userRoute = require('./routes/index')
 
