@@ -27,6 +27,7 @@ mongoose.connect(uri, { useNewUrlParser: true, useUnifiedTopology: true })
 app.use(express.urlencoded({ extended: false }))
 app.use(express.json())
 
+app.get('/' , (req,res)=> res.status(200).json({message : "hello world.."}))
 app.use('/', userRoute)
 
 
