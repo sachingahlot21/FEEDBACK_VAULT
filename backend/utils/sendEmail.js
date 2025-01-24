@@ -25,7 +25,6 @@ module.exports = async({email , userId , verifyCode}) => {
             </p>`, 
           });
 
-          console.log("mail sent...")
           return info
     }
     catch(error){

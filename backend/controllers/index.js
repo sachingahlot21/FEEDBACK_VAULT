@@ -58,12 +58,10 @@ async function handleUserSignup(req, res) {
             savedUser = await newUser.save()
 
             const emailResponse = await sendEmail({ email, userId: savedUser._id, verifyCode })
-            console.log(emailResponse)
-
+            
             if (!emailResponse.response) {
                 return res.status(500).json({ message: "error occured while sending verification code" , errorId: "signup_error_3" })
             }
-            console.log("successfully created new user..wait for verification code...", newUser)
 
         }
 
@@ -82,7 +80,6 @@ async function handleUserSignup(req, res) {
             username: savedUser.username
         }
         const token = generateToken(payload)
-        console.log("token", token)
         return res.status(201).json({ message: "User created successfully... Verify your account via mail" })
 
 
@@ -142,21 +139,16 @@ async function handleUserLogin(req, res) {
 async function verifyEmail(req, res) {
     try {
         const { userId, verifyCode } = await req.query;
-        console.log("userid", userId)
-        console.log("code..", verifyCode)
-
         const user = await User.findById(userId);
         if (!user) {
             return res.status(400).json({ message: "Invalid link: User not found." });
         }
-        console.log(user)
 
         const token = await User.findOne({
             _id: userId,
             verifyCode: verifyCode,
             verifyCodeExpiry: { $gt: Date.now() }
         });
-        console.log(token)
 
         if (!token)
             return res.status(500).json({ message: "invalid link" })
@@ -307,7 +299,7 @@ async function getAllMessage(req, res) {
     }
 
     const userId = new mongoose.Types.ObjectId(userid);
-    console.log("User ID (ObjectId):", userId);
+    
 
     try {
        
@@ -342,7 +334,7 @@ async function getAllNotes(req, res) {
     }
 
     const userId = new mongoose.Types.ObjectId(userid);
-    console.log("User ID (ObjectId):", userId);
+  
 
     try {
        
@@ -371,7 +363,6 @@ async function getAllNotes(req, res) {
 
 async function handleDeleteMessage(req, res) {
     const { userId, messageId } = req.params; // Extract parameters from the URL
-    console.log(userId , messageId)
   
     if (!userId || !messageId) {
       return res.status(400).json({ error: 'User ID and Message ID are required' });
@@ -406,8 +397,6 @@ async function suggestQuestions(req, res) {
 
     const OPENAI_API_KEY = process.env.OPENAI_API_KEY;
 
-    console.log("called", OPENAI_API_KEY)
-
     const instance = axios.create({
         baseURL: 'https://api.openai.com/v1/engines/davinci-codex/completions', // Change endpoint if needed
         headers: {
@@ -433,7 +422,6 @@ async function suggestQuestions(req, res) {
                 },
             }
         );
-        console.log("RR", response.data)
         res.json(response.data);
     } catch (error) {
         res.status(500).send(error.message);

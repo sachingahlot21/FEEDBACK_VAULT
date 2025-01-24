@@ -1,6 +1,6 @@
 require('dotenv').config();
 const express = require('express')
-const mongoose = require('mongoose'); 
+const mongoose = require('mongoose');
 const cors = require('cors')
 
 const userRoute = require('./routes/index')
@@ -8,6 +8,11 @@ const app = express()
 
 const PORT = 3000
 app.use(cors())
+app.use(cors({
+    origin: "",
+    methods: ["POST", "GET"],
+    credentials: true
+}))
 app.use(express.json());
 
 const uri = process.env.MONGO_URI;
@@ -22,7 +27,7 @@ mongoose.connect(uri, { useNewUrlParser: true, useUnifiedTopology: true })
 app.use(express.urlencoded({ extended: false }))
 app.use(express.json())
 
-app.use('/' , userRoute)
+app.use('/', userRoute)
 
 
 app.listen(PORT, () => console.log("APP STARTED AT PORT : ", PORT))
