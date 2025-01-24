@@ -16,6 +16,21 @@ const messageSchema = new mongoose.Schema(
     }
 )
 
+const notesSchema = new mongoose.Schema(
+    {
+        note: {
+            type: String,
+            required: true
+        },
+
+        createdAt: {
+            type: Date,
+            required: true,
+            default: Date.now()
+        }
+    }
+)
+
 const userSchema = new mongoose.Schema(
     {
         username: {
@@ -49,19 +64,21 @@ const userSchema = new mongoose.Schema(
             required: [true, "verify code expiry is required"]
         },
 
-        isVerified : {
+        isVerified: {
             type: Boolean,
-            default:false
+            default: false
         },
 
-        isAcceptingMessage : {
+        isAcceptingMessage: {
             type: Boolean,
-            default:true
+            default: true
         },
 
-        messages : [messageSchema]
+        messages: [messageSchema],
+
+        notes: [notesSchema]
     }
 )
 
-const User = mongoose.model('User' , userSchema)
-module.exports = {User}
+const User = mongoose.model('User', userSchema)
+module.exports = { User }

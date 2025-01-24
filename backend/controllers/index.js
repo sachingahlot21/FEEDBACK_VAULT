@@ -247,6 +247,33 @@ async function sendMessage(req, res) {
 
 }
 
+async function addNotes(req, res) {
+    const { username, note } = await req.body
+
+    try {
+        const user = await User.findOne({ username })
+
+        if (!user) {
+            return res.status(404).json({ message: "user not found..." })
+        }
+
+        // if () {
+        //     return res.status(404).json({ message: 'Notes limit exceed...', success: false })
+        // }
+
+        const newNote = { note, createdAt: new Date() }
+
+        user.notes.push(newNote)
+        await user.save()
+        return res.status(201).json({ message: 'Note added successfully', success: true })
+
+    }
+    catch (error) {
+        return res.status(500).json({ message: "Internal server error" })
+    }
+
+}
+
 // async function getAllMessage(req, res) {
 //     const { userid } = req.body;
 //     const userId = new mongoose.Types.ObjectId(userid);
@@ -300,6 +327,41 @@ async function getAllMessage(req, res) {
         const sortedMessages = user.messages.sort((a, b) => b.createdAt - a.createdAt);
 
         return res.status(200).json({ messages: sortedMessages });
+    } catch (error) {
+        console.error('An unexpected error occurred:', error);
+        return res.status(500).json({ message: 'Internal server error', success: false });
+    }
+}
+
+async function getAllNotes(req, res) {
+    const { userid } = req.body;
+
+    // Validate ObjectId
+    if (!mongoose.Types.ObjectId.isValid(userid)) {
+        return res.status(400).json({ message: 'Invalid User ID format', success: false });
+    }
+
+    const userId = new mongoose.Types.ObjectId(userid);
+    console.log("User ID (ObjectId):", userId);
+
+    try {
+       
+        const user = await User.findById(userId).exec();
+
+     
+        if (!user) {
+            return res.status(404).json({ message: 'User not found', success: false });
+        }
+
+       
+        if (!user.notes || user.notes.length === 0) {
+            return res.status(402).json({ message: 'No notes found for this user', success: false });
+        }
+
+        
+        const sortedNotes = user.notes.sort((a, b) => b.createdAt - a.createdAt);
+
+        return res.status(200).json({ notes: sortedNotes });
     } catch (error) {
         console.error('An unexpected error occurred:', error);
         return res.status(500).json({ message: 'Internal server error', success: false });
@@ -389,4 +451,4 @@ async function suggestQuestions(req, res) {
       }
 }
 
-module.exports = { handleUserSignup, getAcceptMessage, verifyEmail, handleUserLogin, acceptMessage, sendMessage, getAllMessage, suggestQuestions,handleDeleteMessage }
+module.exports = { addNotes,getAllNotes, handleUserSignup, getAcceptMessage, verifyEmail, handleUserLogin, acceptMessage, sendMessage, getAllMessage, suggestQuestions,handleDeleteMessage }
