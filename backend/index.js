@@ -2,17 +2,17 @@ require('dotenv').config();
 const express = require('express')
 const mongoose = require('mongoose');
 const cors = require('cors')
-
-const userRoute = require('./routes/index')
 const app = express()
-app.use(cors())
 
+app.use(cors())
 const corsOptions ={
     origin:'*', 
     credentials:true,            
     optionSuccessStatus:200
 }
 app.use(cors(corsOptions));
+
+const userRoute = require('./routes/index')
 
 const PORT = 3000
 
