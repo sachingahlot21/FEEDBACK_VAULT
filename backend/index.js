@@ -4,8 +4,10 @@ const mongoose = require('mongoose');
 const cors = require('cors')
 const app = express()
 
-app.use(cors());
-
+// app.use(cors());
+app.use(cors({
+    allowedHeaders: ['Content-Type', 'Authorization', 'Other-Headers-If-Needed'],
+}));
 const userRoute = require('./routes/index')
 
 const PORT = 3000

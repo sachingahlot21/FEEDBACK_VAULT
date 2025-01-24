@@ -40,7 +40,7 @@ export default function Login({ handleLogin }) {
     }
 
     try {
-      const response = await axios.post(`${import.meta.env.VITE_REACT_APP_BACKEND_URL}/signin`, data)
+      const response = await axios.post('https://feedback-vault-api.vercel.app/signin', data)
       if (response.status > 200) {
         setUserNameContext(response.data.user.username)
         setUserIDContext(response.data.user._id)
