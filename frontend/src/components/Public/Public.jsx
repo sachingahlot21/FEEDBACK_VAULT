@@ -59,7 +59,6 @@ function Public() {
     ]
   }
 
-
   const data = {
     "username": username,
     "content": message
@@ -99,12 +98,12 @@ function Public() {
 
   const handleSugguestMessages = async () => {
 
-    let api_key = import.meta.env.VITE_gemini_api_key
+    //let api_key = import.meta.env.VITE_gemini_api_key
 
     try {
       const response = await axios(
         {
-          url: `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key=${api_key}`,
+          url: `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key=${import.meta.env.VITE_gemini_api_key}`,
           method: "post",
           data: {
             contents: [{ parts: [{ text: "Create a array of three open-ended and engaging questions formatted as a single string in double . Length of the question should be between 7-10 words. These questions are for an anonymous social messaging platform, like Qooh.me, and should be suitable for a diverse audience. Avoid personal or sensitive topics, focusing instead on universal themes that encourage friendly interaction. For example, your output should be structured like this in an array: ['What’s a hobby you’ve recently started?' , 'If you could have dinner with any historical figure, who would it be? ' , 'What’s a simple thing that makes you happy?']. Ensure the questions are intriguing, foster curiosity, and contribute to a positive and welcoming conversational environment." }] }],
