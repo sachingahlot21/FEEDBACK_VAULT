@@ -200,7 +200,7 @@ const Dashboard = ({ handleLogout }) => {
 
         <div className="bg-gray-100 mb-6 p-6 rounded-lg shadow-lg">
           <div>
-            <h2 className="text-l font-semibold mb-4">Drop the update.</h2>
+            <h2 className="text-l font-semibold mb-4">Drop the update...</h2>
             <div className='mb-4 flex gap-2'>
              
             </div>
