@@ -32,7 +32,7 @@ app.get("/",(request,response)=>{
         message : "Server is running " 
     })
 })
-app.use('/api/',userRoute)
+app.use('/api',userRoute)
 
 // app.use('/', userRoute)
 
