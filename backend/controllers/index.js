@@ -434,7 +434,7 @@ async function suggestQuestions(req, res) {
         });
         return response.data.choices[0].text.trim();
       } catch (error) {
-        console.error('Error fetching suggestions:', error);
+        console.error('Error fetching suggestions : ', error);
         return res.status(500).send(error.message);;
       }
 }
