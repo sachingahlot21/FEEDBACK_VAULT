@@ -26,10 +26,10 @@ mongoose.connect(uri, { useNewUrlParser: true, useUnifiedTopology: true })
 app.use(express.urlencoded({ extended: false }))
 app.use(express.json())
 
-// app.get('/', userRoute)
-app.get('/', (req, res) => {
-    res.send('Hello, GET Request!');
-});
+app.get('/', userRoute)
+// app.get('/', (req, res) => {
+//     res.send('Hello, GET Request!');
+// });
 
 
 app.listen(PORT, () => console.log("APP STARTED AT PORT : ", PORT))
